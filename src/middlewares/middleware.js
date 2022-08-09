@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-// const userModel = require("../models/userModel");
 const mongoose = require('mongoose');
 
 
@@ -28,7 +27,6 @@ const auth = async function (req, res, next) {
         if (!userId || !mongoose.Types.ObjectId.isValid(userId)) return res.status(400).send({ status: false, message: "Provide a valid userId." })
 
         if (userId !== decodedToken.userId) return res.status(403).send({ status: false, message: "Authorization failed: userId in params doesn't match with that in token."});
-        req.userId = userId;
         next();
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });

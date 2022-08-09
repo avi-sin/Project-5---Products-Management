@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { isValid, isValidBody, validation, parsingFunc, nameRegex, emailRegex, phoneRegex, passRegex, pinRegex } = require('../validations/validator')
 const aws = require("aws-sdk");
-const { restart } = require('nodemon');
 
 
 aws.config.update({
@@ -123,7 +122,7 @@ const loginUser = async function (req, res) {
         if (!user) return res.status(401).send({ status: false, message: "Email or password is incorrect." })  // if the user document isn't found in the database.
 
         let value = await bcrypt.compare(password.toString(), user.password);
-        if (!value) return res.status(401).send({ status: false, message: "Email or password is incorrect.⚠️" })
+        if (!value) return res.status(401).send({ status: false, message: "Email or password is incorrect." })
 
         let token = jwt.sign(  // --> to generate the jwt token
             {
@@ -162,7 +161,7 @@ const updateProfile = async function (req, res) {
         if (!isValidBody(data)) return res.status(400).send({ status: false, message: "No data found to update." })
         let { fname, lname, email, phone, password, address } = data;
 
-        const validUkeys = function (value,valueNmae) {
+        const validUkeys = function (value,valueName) {
             let regex = { fname: nameRegex, lname: nameRegex, email: emailRegex, phone: phoneRegex, password: passRegex, city: nameRegex, pincode: pinRegex };
             let msgs = {
                 fname: "fname should contain alphabets only.",
@@ -178,7 +177,7 @@ const updateProfile = async function (req, res) {
                 pincode: "pincode should be numeric."
             }
             const arr = Object.keys(value);
-            if(arr.length==0)return { status: false, message: `provide data in ${valueNmae} to update` }
+            if(arr.length==0)return { status: false, message: `provide data in ${valueName} to update` }
             for (let i of arr) {
                 if (msgs[i]) {
                     if (!isValid(value[i])) return { status: false, message: `Provide ${i}` }
